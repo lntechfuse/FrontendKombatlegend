@@ -17,32 +17,41 @@ h1 {
   font-size: 3rem;
   color: aliceblue;
   font-weight: bold;
-  margin-bottom: 100px;
+  margin-bottom: 40px; /* ลดระยะห่างจากข้อความไปยังปุ่ม */
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .button-group {
-  margin-top: 60px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 20px; /* เพิ่มช่องว่างระหว่างปุ่ม */
 }
 
-.back-button {
-  width: 500px;
-  padding: 15px;
+.Leady {
+  width: 80%; /* ปรับให้ปุ่มมีขนาดที่ยืดหยุ่นและพอดีกับหน้าจอ */
+  max-width: 500px; /* กำหนดขนาดสูงสุด */
+  padding: 20px;
   font-size: 2rem;
   font-weight: bold;
-  border-radius: 5px;
+  border-radius: 50px; /* ทำมุมให้โค้งมน */
   border: 2px solid #ff4081;
   background: #1e1e1e;
   color: #ff4081;
   cursor: pointer;
-  transition: 0.3s ease-in-out;
+  transition: 0.3s ease-in-out, transform 0.2s ease; /* เพิ่มการเคลื่อนไหว */
+  margin: 0 auto; /* จัดให้ปุ่มอยู่กลาง */
 }
 
-.back-button:hover {
+.Leady:hover {
   background: #ff4081;
   color: white;
+  transform: scale(1.05); /* ขยายปุ่มเล็กน้อยเมื่อ hover */
 }
 
+.Leady:focus {
+  outline: none; /* กำจัดขอบเมื่อปุ่มได้รับการคลิก */
+}
+
+.Leady:active {
+  transform: scale(0.98); /* ลดขนาดเล็กน้อยเมื่อกด */
+}

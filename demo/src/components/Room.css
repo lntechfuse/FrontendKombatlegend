@@ -22,15 +22,15 @@
   p {
     color: #fff;
     font-size: 1.5rem;
-    margin-top: -50px;
+    margin-top: 10px;
     font-family: 'Courier New', Courier, monospace;
   }
   
   .button-group {
-    margin-top: 120px;
+    margin-top: 20px;
     display: flex;
     flex-direction: column;
-    gap: 40px;
+    gap: 10px;
   }
   
   .button {
