@@ -1,0 +1,48 @@
+.wait-container {
+  background-image: url('../images/mode.png'); 
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+h1 {
+  font-size: 3rem;
+  color: aliceblue;
+  font-weight: bold;
+  margin-bottom: 100px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.button-group {
+  margin-top: 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.back-button {
+  width: 500px;
+  padding: 15px;
+  font-size: 2rem;
+  font-weight: bold;
+  border-radius: 5px;
+  border: 2px solid #ff4081;
+  background: #1e1e1e;
+  color: #ff4081;
+  cursor: pointer;
+  transition: 0.3s ease-in-out;
+}
+
+.back-button:hover {
+  background: #ff4081;
+  color: white;
+}
+

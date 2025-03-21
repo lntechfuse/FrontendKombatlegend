@@ -1,0 +1,41 @@
+/* GAME MENU */
+.game-menu {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    background-image: url('../images/home.png');
+    background-size: cover;  
+    background-position: center center;  
+    background-repeat: no-repeat;  
+    background-attachment: fixed;  
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;  
+}
+  
+/* Start Button */
+.start-button {
+    position: absolute;
+    left: 50%;
+    top: 80%;
+    width: 200px;
+    height: 80px;
+    background-color: #1E1E1E;
+    border: 1px solid #C6386D;
+    border-radius: 10px;
+    color: white;
+    font-size: 40px;
+    font-family: 'Game Of Squids', sans-serif;
+    text-align: center;
+    line-height: 80px;
+    transform: translateX(-50%);
+    cursor: pointer;
+    transition: 0.3s ease-in-out;
+}
+  
+.start-button:hover {
+    background-color: #C6386D;
+    color: black;
+    transform: translateX(-50%) scale(1.05);
+}
