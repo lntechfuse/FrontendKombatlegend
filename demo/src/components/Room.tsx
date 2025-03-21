@@ -10,7 +10,7 @@ const Room: React.FC = () => {
       <h1>660660660</h1>
       <p>Please have the second player enter the room number</p>
 
-      <button className="button" onClick={() => navigate("/wait")}>
+      <button className="button" onClick={() => navigate("/select")}>
         Create
       </button>
     </div>

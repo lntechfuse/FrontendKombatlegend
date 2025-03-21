@@ -60,7 +60,7 @@ const Mode: React.FC = () => {
         <button className="button primary" onMouseEnter={handleHover} onClick={() => handleClick("Duel")}>
           Duel
         </button>
-        <button className="button secondary" onMouseEnter={handleHover} onClick={() => handleClick("select")}>
+        <button className="button secondary" onMouseEnter={handleHover} onClick={() => handleClick("selec")}>
           Solitaire
         </button>
         <button className="button secondary" onMouseEnter={handleHover} onClick={() => handleClick("select")}>

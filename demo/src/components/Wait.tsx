@@ -9,7 +9,7 @@ const Wait: React.FC = () => {
     <div className="wait-container">
       <h1>Please wait while other players join the game.</h1>
 
-      <button className="Leady" onClick={() => navigate("/Select")}>
+      <button className="Leady" onClick={() => navigate("/GameUi")}>
           Leady
       </button>
     </div>

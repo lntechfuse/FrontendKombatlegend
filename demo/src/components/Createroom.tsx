@@ -33,7 +33,7 @@ const CreateRoom: React.FC = () => {
         <button className="button" onMouseEnter={handleHover} onClick={() => handleClick("/Room")}>
           Create Room
         </button>
-        <button className="button" onMouseEnter={handleHover} onClick={() => handleClick("/mode")}>
+        <button className="button" onMouseEnter={handleHover} onClick={() => handleClick("/Join")}>
           Join
         </button>
         <button className="button" onMouseEnter={handleHover} onClick={() => navigate(-1)}>
