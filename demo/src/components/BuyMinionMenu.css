@@ -1,0 +1,98 @@
+.minion-menu {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #000; /* พื้นหลังสีดำ */
+  padding: 20px;
+  border: 2px solid #ff0080; /* เส้นขอบสีชมพู */
+  z-index: 1000; /* ปรับระดับเลเยอร์ หากต้องการให้ต่ำกว่าหรือสูงกว่า Map */
+  color: #fff;
+  width: 400px; /* ย่อขนาดความกว้าง */
+  text-align: center;
+  font-family: "Arial", sans-serif;
+}
+
+.menu-title {
+  font-size: 20px;
+  margin-bottom: 10px;
+  letter-spacing: 1px;
+  color: #ff0080;
+}
+
+.minion-list {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  margin-bottom: 10px;
+  border-left: 2px solid #ff0080;
+  border-right: 2px solid #ff0080;
+  padding: 5px 0;
+}
+
+.minion-item {
+  flex: 1;
+  position: relative;
+  text-align: center;
+  padding: 10px 0;
+  border-right: 2px solid #ff0080; /* เส้นแบ่งสีชมพูระหว่าง Minion */
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+/* ยกเลิกเส้นแบ่งในตัวสุดท้าย */
+.minion-item:last-child {
+  border-right: none;
+}
+
+.minion-item:hover {
+  transform: scale(1.05);
+}
+
+.shape-icon {
+  margin-bottom: 5px;
+}
+
+/* หากใช้รูปภาพ ให้ลดขนาดไอคอนตามต้องการ */
+.minion-icon {
+  width: 50px;
+  height: 50px;
+}
+
+.minion-name {
+  font-size: 14px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  margin-top: 5px;
+}
+
+.minion-cost {
+  font-size: 12px;
+  margin-top: 3px;
+  color: #ff0080;
+}
+
+/* แสดงเส้นขอบสีชมพูเมื่อถูกเลือก */
+.selected {
+  border: 2px solid #ff0080;
+  margin: -2px; /* เพื่อให้ขอบไม่ดัน Layout */
+}
+
+.menu-actions {
+  margin-top: 10px;
+}
+
+.menu-actions button {
+  margin: 0 5px;
+  padding: 8px 15px;
+  background-color: #ff0080;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s ease;
+}
+
+.menu-actions button:hover {
+  background-color: #ff3399;
+}

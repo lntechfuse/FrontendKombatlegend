@@ -3,6 +3,7 @@ import "./GameUI.css";
 import avatargm from "../images/avatargm.jpg";
 import avatarplayer from "../images/avatarplayer.jpg";
 import Map from "./Map";
+import BuyMinionMenu from "./BuyMinionMenu";
 
 // ข้อมูล Minion
 const minionTypes = [
@@ -12,11 +13,11 @@ const minionTypes = [
 ];
 
 const GameUI: React.FC = () => {
-  const [gold, setGold] = useState<number>(10000); // เงินเริ่มต้น
-  const [minionsLeft, setMinionsLeft] = useState<number>(10); // จำนวน Minion ที่เหลือ
-  const [showMinionMenu, setShowMinionMenu] = useState<boolean>(false); // แสดง/ซ่อนเมนูเลือก Minion
-  const [selectedMinion, setSelectedMinion] = useState<string | null>(null); // Minion ที่เลือก
-  const [currentPlayer, setCurrentPlayer] = useState<number>(1); // 1 = ผู้เล่นคนที่ 1, 2 = ผู้เล่นคนที่ 2
+  const [gold, setGold] = useState<number>(10000); 
+  const [minionsLeft, setMinionsLeft] = useState<number>(10); 
+  const [showMinionMenu, setShowMinionMenu] = useState<boolean>(false); 
+  const [selectedMinion, setSelectedMinion] = useState<string | null>(null); 
+  const [currentPlayer, setCurrentPlayer] = useState<number>(1); 
 
   // เปิดเมนูเลือก Minion
   const openMinionMenu = () => {
@@ -35,9 +36,9 @@ const GameUI: React.FC = () => {
 
     const minionData = minionTypes.find((m) => m.name === selectedMinion);
     if (minionData && gold >= minionData.cost && minionsLeft > 0) {
-      setGold(gold - minionData.cost); // หักเงิน
-      setMinionsLeft(minionsLeft - 1); // ลด Minion ที่เหลือ
-      setShowMinionMenu(false);        // ปิดเมนู
+      setGold(gold - minionData.cost);
+      setMinionsLeft(minionsLeft - 1);
+      setShowMinionMenu(false);
     }
   };
 
@@ -87,35 +88,20 @@ const GameUI: React.FC = () => {
       <button className="end-turn" onClick={endTurn}>END TURN</button>
       
       {/* ข้อความ Current Turn */}
-      <p>Current Turn: {currentPlayer === 1 ? "Player 1" : "Player 2"}</p>
+      <p className="current-turn">
+        Current Turn:<br />
+        {currentPlayer === 1 ? "Player 1" : "Player 2"}
+      </p>
 
-      {/* Minion Selection Menu */}
+      {/* Popup Buy Minion Menu */}
       {showMinionMenu && (
-        <div className="minion-menu">
-          <h3>Select a Minion</h3>
-          {minionTypes.map((minion) => (
-            <button
-              key={minion.name}
-              className={selectedMinion === minion.name ? "selected" : ""}
-              onClick={() => selectMinion(minion.name)}
-              disabled={gold < minion.cost}
-            >
-              {minion.name} - {minion.cost} 💰
-            </button>
-          ))}
-          <div>
-            <button
-              onClick={buyMinion}
-              disabled={
-                !selectedMinion ||
-                gold < (minionTypes.find((m) => m.name === selectedMinion)?.cost || 0)
-              }
-            >
-              Confirm Purchase
-            </button>
-            <button onClick={() => setShowMinionMenu(false)}>Cancel</button>
-          </div>
-        </div>
+        <BuyMinionMenu
+          minionTypes={minionTypes}
+          selectedMinion={selectedMinion}
+          onSelectMinion={selectMinion}
+          onBuyMinion={buyMinion}
+          onCancel={() => setShowMinionMenu(false)}
+        />
       )}
     </div>
   );

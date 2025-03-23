@@ -5,7 +5,6 @@ import Mode from "./components/Mode";
 import Createroom from "./components/Createroom";
 import Room from "./components/Room";
 import Join from "./components/Join";
-
 import Select from "./components/Select";
 import Strategy from "./components/Strategy";  
 import Wait from "./components/Wait";
