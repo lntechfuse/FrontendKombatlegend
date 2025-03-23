@@ -1,223 +1,224 @@
 .game-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    height: 100vh;
-    width: 100vw;
-    background-image: url('../images/gameui.png'); /* ตรวจสอบ path ของไฟล์รูป */
-    background-size: cover;
-    background-position: center center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    color: white;
-    font-family: Arial, sans-serif;
-    padding: 10px;
-    position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+  background-image: url('../images/gameui.png'); /* ตรวจสอบ path ของไฟล์รูป */
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  color: white;
+  font-family: Arial, sans-serif;
+  padding: 10px;
+  position: relative; /* สำหรับกำหนดตำแหน่ง absolute ลูกด้านใน */
 }
 
-  
-  .player-panel {
-    width: 250px;
-    background-color: #333;
-    padding: 15px;
-    border-radius: 10px;
-    text-align: center;
-  }
-  
-  .left {
-    align-self: flex-start;
-  }
-  
-  .right {
-    align-self: flex-end;
-  }
-  
-  .player-info {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-bottom: 10px;
-  }
-  
-  .avatar {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    border: 2px solid white;
-  }
-  
-  .player-name {
-    margin-top: 5px;
-    font-weight: bold;
-    font-size: 1.2em;
-  }
-  
-  .stats {
-    margin-top: 10px;
-  }
-  
-  .stat-item {
-    margin: 5px 0;
-    font-size: 1.1em;
-  }
-  
-  .buy-minion {
-    background-color: #4caf50;
-    color: white;
-    border: none;
-    padding: 8px 12px;
-    font-size: 1em;
-    cursor: pointer;
-    border-radius: 5px;
-  }
-  
-  .buy-minion:hover {
-    background-color: #45a049;
-  }
-  
-  .game-board {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: relative;
-  }
-  
-  .hex-grid {
-    display: grid;
-    grid-template-columns: repeat(8, 40px);
-    grid-gap: 5px;
-    background-color: #444;
-    padding: 10px;
-    border-radius: 10px;
-  }
-  
-  .hex-cell {
-    width: 40px;
-    height: 40px;
-    background-color: #666;
-    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
-  }
-  
-  .turn-indicator {
-    margin-top: 10px;
-    font-size: 1.5em;
-    font-weight: bold;
-  }
-  
-  .end-turn {
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: #ff5733;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    font-size: 1.2em;
-    cursor: pointer;
-    border-radius: 8px;
-  }
-  
-  .end-turn:hover {
-    background-color: #e04e2b;
-  }
-  
-  .minion-menu {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: black;
-    padding: 20px;
-    border-radius: 10px;
-    text-align: center;
-  }
-  
-  .minion-menu button {
-    display: block;
-    width: 100%;
-    margin: 5px 0;
-    padding: 10px;
-    font-size: 18px;
-    cursor: pointer;
-  }
-  
-  .minion-menu button.selected {
-    background: green;
-    color: white;
-  }
-  
-  .minion-menu button:disabled {
-    background: gray;
-    cursor: not-allowed;
-  }
-  .minion-menu {
-    background: black;
-    color: white;
-    padding: 20px;
-    border-radius: 10px;
-    text-align: center;
-  }
-  
-  .minion-grid {
-    display: flex;
-    justify-content: space-around;
-    gap: 20px;
-  }
-  
-  .minion-card {
-    background: rgba(255, 255, 255, 0.1);
-    padding: 15px;
-    border-radius: 10px;
-    text-align: center;
-    width: 120px;
-    border: 2px solid transparent;
-  }
-  
-  .minion-card.selected {
-    border: 2px solid yellow;
-  }
-  
-  .minion-icon {
-    font-size: 30px;
-  }
-  
-  .minion-name {
-    font-size: 18px;
-    font-weight: bold;
-    margin: 5px 0;
-  }
-  
-  .minion-cost {
-    font-size: 14px;
-    color: gold;
-  }
-  
-  .minion-card button {
-    background: #ff007f;
-    color: white;
-    padding: 5px 10px;
-    border: none;
-    cursor: pointer;
-    margin-top: 5px;
-  }
-  
-  .minion-card button:disabled {
-    background: gray;
-  }
-  
-  .cancel-button {
-    background: red;
-    color: white;
-    padding: 10px;
-    border: none;
-    cursor: pointer;
-    margin-top: 15px;
-  }
-  .map-container {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-  }
+/* Panel หลัก */
+.player-panel {
+  width: 250px;
+  background-color: #333;
+  padding: 15px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+/* GM Panel (ซ้ายบน) */
+.left {
+  align-self: flex-start;
+}
+
+/* Player Panel (มุมล่างขวา) */
+.player-panel.bottom-right {
+  position: absolute;
+  right: 20px;   /* ระยะห่างจากขอบขวา ปรับได้ตามต้องการ */
+  bottom: 20px;  /* ระยะห่างจากขอบล่าง ปรับได้ตามต้องการ */
+}
+
+/* ถ้ามี .right เดิม ไม่จำเป็นต้องลบ แต่สามารถคอมเมนต์ไว้ หรือจะลบออกเลยก็ได้
+.right {
+  align-self: flex-end;
+} */
+
+/* ส่วนจัดการแสดงข้อมูลผู้เล่น */
+.player-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 2px solid white;
+}
+
+.player-name {
+  margin-top: 5px;
+  font-weight: bold;
+  font-size: 1.2em;
+}
+
+.stats {
+  margin-top: 10px;
+}
+
+.stat-item {
+  margin: 5px 0;
+  font-size: 1.1em;
+}
+
+.buy-minion {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  font-size: 1em;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.buy-minion:hover {
+  background-color: #45a049;
+}
+
+/* ส่วนของกระดานเกม */
+.game-board {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.hex-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 40px);
+  grid-gap: 5px;
+  background-color: #444;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.hex-cell {
+  width: 40px;
+  height: 40px;
+  background-color: #666;
+  clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+}
+
+.turn-indicator {
+  margin-top: 10px;
+  font-size: 1.5em;
+  font-weight: bold;
+}
+
+/* ปุ่ม END TURN */
+.end-turn {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #ff5733;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  font-size: 1.2em;
+  cursor: pointer;
+  border-radius: 8px;
+}
+.end-turn:hover {
+  background-color: #e04e2b;
+}
+
+/* เมนูเลือก Minion */
+.minion-menu {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: black;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  color: white;
+}
+
+.minion-menu button {
+  display: block;
+  width: 100%;
+  margin: 5px 0;
+  padding: 10px;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.minion-menu button.selected {
+  background: green;
+  color: white;
+}
+
+.minion-menu button:disabled {
+  background: gray;
+  cursor: not-allowed;
+}
+
+/* ตัวเลือกในเมนู Minion */
+.minion-grid {
+  display: flex;
+  justify-content: space-around;
+  gap: 20px;
+}
+
+.minion-card {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 15px;
+  border-radius: 10px;
+  text-align: center;
+  width: 120px;
+  border: 2px solid transparent;
+}
+
+.minion-card.selected {
+  border: 2px solid yellow;
+}
+
+.minion-icon {
+  font-size: 30px;
+}
+
+.minion-name {
+  font-size: 18px;
+  font-weight: bold;
+  margin: 5px 0;
+}
+
+.minion-cost {
+  font-size: 14px;
+  color: gold;
+}
+
+.minion-card button {
+  background: #ff007f;
+  color: white;
+  padding: 5px 10px;
+  border: none;
+  cursor: pointer;
+  margin-top: 5px;
+}
+
+.minion-card button:disabled {
+  background: gray;
+}
+
+.cancel-button {
+  background: red;
+  color: white;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+  margin-top: 15px;
+}
