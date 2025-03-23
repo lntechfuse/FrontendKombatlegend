@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "./GameUI.css";
 import avatargm from "../images/avatargm.jpg";
 import avatarplayer from "../images/avatarplayer.jpg";
-import Map from "./Map"; 
+import Map from "./Map";
 
 // ข้อมูล Minion
 const minionTypes = [
@@ -37,7 +37,7 @@ const GameUI: React.FC = () => {
     if (minionData && gold >= minionData.cost && minionsLeft > 0) {
       setGold(gold - minionData.cost); // หักเงิน
       setMinionsLeft(minionsLeft - 1); // ลด Minion ที่เหลือ
-      setShowMinionMenu(false); // ปิดเมนู
+      setShowMinionMenu(false);        // ปิดเมนู
     }
   };
 
@@ -48,7 +48,7 @@ const GameUI: React.FC = () => {
 
   return (
     <div className="game-container">
-      {/* GM Panel */}
+      {/* GM Panel (มุมซ้ายบน) */}
       <div className="player-panel left">
         <div className="player-info">
           <img src={avatargm} alt="GM Avatar" className="avatar" />
@@ -63,15 +63,13 @@ const GameUI: React.FC = () => {
         </div>
       </div>
 
-      {/* Map */}
+      {/* Map ตรงกลาง */}
       <div className="map-container">
-        {/* ส่ง currentPlayer ให้ Map เพื่อให้ Hexagon ภายในแสดงสีขอบตาม turn */}
         <Map currentPlayer={currentPlayer} width={500} height={500} />
-
       </div>
 
-      {/* Player Panel */}
-      <div className="player-panel right">
+      {/* Player Panel (ย้ายมาอยู่ด้านล่างขวา) */}
+      <div className="player-panel bottom-right">
         <div className="player-info">
           <span className="player-name">PLAYER</span>
           <img src={avatarplayer} alt="Player Avatar" className="avatar" />
@@ -85,8 +83,10 @@ const GameUI: React.FC = () => {
         </div>
       </div>
 
-      {/* End Turn */}
+      {/* ปุ่ม END TURN */}
       <button className="end-turn" onClick={endTurn}>END TURN</button>
+      
+      {/* ข้อความ Current Turn */}
       <p>Current Turn: {currentPlayer === 1 ? "Player 1" : "Player 2"}</p>
 
       {/* Minion Selection Menu */}
