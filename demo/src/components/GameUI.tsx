@@ -16,6 +16,7 @@ const GameUI: React.FC = () => {
   const [minionsLeft, setMinionsLeft] = useState<number>(10); // จำนวน Minion ที่เหลือ
   const [showMinionMenu, setShowMinionMenu] = useState<boolean>(false); // แสดง/ซ่อนเมนูเลือก Minion
   const [selectedMinion, setSelectedMinion] = useState<string | null>(null); // Minion ที่เลือก
+  const [currentPlayer, setCurrentPlayer] = useState<number>(1); // 1 = ผู้เล่นคนที่ 1, 2 = ผู้เล่นคนที่ 2
 
   // เปิดเมนูเลือก Minion
   const openMinionMenu = () => {
@@ -40,6 +41,11 @@ const GameUI: React.FC = () => {
     }
   };
 
+  // ฟังก์ชันสลับ Turn
+  const endTurn = () => {
+    setCurrentPlayer((prev) => (prev === 1 ? 2 : 1));
+  };
+
   return (
     <div className="game-container">
       {/* GM Panel */}
@@ -59,7 +65,9 @@ const GameUI: React.FC = () => {
 
       {/* Map */}
       <div className="map-container">
-        <Map />
+        {/* ส่ง currentPlayer ให้ Map เพื่อให้ Hexagon ภายในแสดงสีขอบตาม turn */}
+        <Map currentPlayer={currentPlayer} width={500} height={500} />
+
       </div>
 
       {/* Player Panel */}
@@ -78,7 +86,8 @@ const GameUI: React.FC = () => {
       </div>
 
       {/* End Turn */}
-      <button className="end-turn">END TURN</button>
+      <button className="end-turn" onClick={endTurn}>END TURN</button>
+      <p>Current Turn: {currentPlayer === 1 ? "Player 1" : "Player 2"}</p>
 
       {/* Minion Selection Menu */}
       {showMinionMenu && (
@@ -95,7 +104,13 @@ const GameUI: React.FC = () => {
             </button>
           ))}
           <div>
-            <button onClick={buyMinion} disabled={!selectedMinion || gold < (minionTypes.find(m => m.name === selectedMinion)?.cost || 0)}>
+            <button
+              onClick={buyMinion}
+              disabled={
+                !selectedMinion ||
+                gold < (minionTypes.find((m) => m.name === selectedMinion)?.cost || 0)
+              }
+            >
               Confirm Purchase
             </button>
             <button onClick={() => setShowMinionMenu(false)}>Cancel</button>
