@@ -1,6 +1,5 @@
 import React from "react";
 import Hexagon from "./Hexagon";
-
 export interface MinionPlacement {
   row: number;
   col: number;
@@ -9,7 +8,7 @@ export interface MinionPlacement {
 
 interface SVGComponentProps extends React.SVGProps<SVGSVGElement> {
   currentPlayer: number;
-  // รับค่า minionPlacements จากภายนอก (ผ่านการพิมพ์ row, col)
+  // รับค่า minionPlacements จากภายนอก (ผ่านการพิมพ์ row,col)
   minionPlacements?: MinionPlacement[];
 }
 
@@ -19,6 +18,7 @@ const SVGComponent: React.FC<SVGComponentProps> = ({
   ...props
 }) => {
   // ฟังก์ชันสำหรับคำนวณตำแหน่งกึ่งกลางของ Hexagon
+  // ค่าเหล่านี้คำนวณจากการวัดใน path ของ Hexagon ที่ออกแบบไว้
   // โดยประมาณ: สำหรับ Row 1, Col 1 center อยู่ที่ (46,85)
   // Horizontal spacing ~ 79, vertical spacing ~ 83
   const getHexCenter = (row: number, col: number) => {
@@ -26,12 +26,15 @@ const SVGComponent: React.FC<SVGComponentProps> = ({
     const startY = 85;
     const spacingX = 79;
     const spacingY = 83;
-    return {
-      x: startX + (col - 1) * spacingX,
-      y: startY + (row - 1) * spacingY,
-    };
+    let x = startX + (col - 1) * spacingX;
+    let y = startY + (row - 1) * spacingY;
+    // ถ้า col เป็นเลขคู่ ให้เลื่อน minion ขึ้นด้านบน
+    if (col % 2 === 0) {
+      y = y - spacingY / 2; // ปรับค่า offset ตามที่เหมาะสม ถ้าไม่พอสามารถปรับตัวเลขนี้เพิ่มหรือลดได้
+    }
+    return { x, y };
   };
-
+  
   // ฟังก์ชันสำหรับดึงที่อยู่ของรูป minion ตามชนิด
   const getMinionImage = (minionType: string): string => {
     switch (minionType) {
@@ -519,23 +522,22 @@ const SVGComponent: React.FC<SVGComponentProps> = ({
         currentPlayer={currentPlayer}
       />
 
-      {/* Render Minions โดยคำนวณตำแหน่งจาก row, col */}
-      {minionPlacements.map((placement, index) => {
-        const { x, y } = getHexCenter(placement.row, placement.col);
-        return (
-          <g key={index} transform={`translate(${x}, ${y})`}>
-            <image
-              href={process.env.PUBLIC_URL + `/Minion/${placement.minionType}.png`}
-              x={-25} // offset image ให้ตรงกลาง
-              y={-25} // offset image ให้ตรงกลาง
-              width="50"
-              height="50"
-            />
-          </g>
-        );
-      })}
+{minionPlacements.map((placement, index) => {
+  const { x, y } = getHexCenter(placement.row, placement.col);
+  return (
+    <g key={index} transform={`translate(${x}, ${y})`}>
+      <image
+        href={process.env.PUBLIC_URL + `/Minion/${placement.minionType}.png`}
+        x={-25} // offset image ให้ตรงกลาง
+        y={-25} // offset image ให้ตรงกลาง
+        width="50"
+        height="50"
+      />
+    </g>
+  );
+})}
+
     </svg>
   );
 };
-
 export default SVGComponent;
