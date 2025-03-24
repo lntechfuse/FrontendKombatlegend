@@ -60,6 +60,8 @@ const GameUI: React.FC = () => {
   const [currentPlayer, setCurrentPlayer] = useState<number>(1);
   const [minionsOnMap, setMinionsOnMap] = useState<MinionPlacement[]>([]);
   const [boardOwnership, setBoardOwnership] = useState<BoardCell[]>(initializeBoard());
+  // เพิ่ม state สำหรับ turn count
+  const [turn, setTurn] = useState<number>(1);
 
   useEffect(() => {
     console.log("minionsOnMap:", minionsOnMap);
@@ -77,7 +79,7 @@ const GameUI: React.FC = () => {
     const cell = boardOwnership.find((c) => c.row === row && c.col === col);
     if (!cell || cell.owner !== currentPlayer) {
       alert("You can only place a minion in your own area!");
-      setShowMinionMenu(false); // ปิดหน้าต่างเมื่อแจ้งเตือนแล้ว
+      setShowMinionMenu(false);
       return;
     }
 
@@ -151,8 +153,21 @@ const GameUI: React.FC = () => {
   };
 
   const endTurn = () => {
+    // เปลี่ยน currentPlayer และเพิ่ม turn count (ถ้ายังไม่ครบ 50)
     setCurrentPlayer((prev) => (prev === 1 ? 2 : 1));
+    if (turn < 50) {
+      setTurn(turn + 1);
+    }
   };
+
+  // เมื่อครบ 50 turn ให้แสดง Game Over
+  if (turn >= 50) {
+    return (
+      <div className="game-container">
+        <h1 style={{ textAlign: "center", color: "#fff" }}>Game Over</h1>
+      </div>
+    );
+  }
 
   return (
     <div className="game-container">
@@ -190,6 +205,22 @@ const GameUI: React.FC = () => {
             </button>
           )}
         </div>
+      </div>
+
+      {/* Turn Counter อยู่ตรงกลางด้านบน Map */}
+      <div
+        style={{
+          position: "absolute",
+          top: "10px",
+          left: "50%",
+          transform: "translateX(-50%)",
+          fontSize: "24px",
+          fontWeight: "bold",
+          color: "#fff",
+          zIndex: 10,
+        }}
+      >
+        Turn: {turn}/50
       </div>
 
       {/* Map Container */}
