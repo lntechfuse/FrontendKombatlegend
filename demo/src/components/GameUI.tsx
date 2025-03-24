@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./GameUI.css";
 import avatargm from "../images/avatargm.jpg";
 import avatarplayer from "../images/avatarplayer.jpg";
@@ -11,18 +11,6 @@ const minionTypes = [
   { name: "Tank", cost: 100 },
 ];
 
-// -------------------------
-// ฟังก์ชันคำนวณพิกัด Hex สำหรับ Flat-Top แบบ odd‑r (ถ้าต้องใช้ในส่วนอื่น)
-// -------------------------
-const hexSize = 25; // รัศมีของ hex (ครึ่งหนึ่งของความกว้าง)
-const hexWidth = 2 * hexSize; // 50px
-const hexHeight = Math.sqrt(3) * hexSize; // ~43.3px
-const xSpacing = hexWidth * 0.75; // ~37.5px
-const ySpacing = hexHeight;       // ~43.3px
-
-// -------------------------
-// ส่วนโค้ดหลัก GameUI
-// -------------------------
 interface MinionPlacement {
   id: number;
   row: number;
@@ -38,16 +26,25 @@ const GameUI: React.FC = () => {
   const [inventory, setInventory] = useState<string[]>([]);
   const [minionsOnMap, setMinionsOnMap] = useState<MinionPlacement[]>([]);
 
+  // ตรวจสอบค่า state ของ minionsOnMap ทุกครั้งที่มีการเปลี่ยนแปลง
+  useEffect(() => {
+    console.log("minionsOnMap:", minionsOnMap);
+    minionsOnMap.forEach((minion, index) => {
+      if (minion.row === 0 || minion.col === 0) {
+        console.warn(`Minion at index ${index} has invalid position:`, minion);
+      }
+    });
+  }, [minionsOnMap]);
+
   const generateId = () => Math.floor(Math.random() * 1000000);
 
-  // ฟังก์ชันสำหรับซื้อ minion โดยรับค่า row, col (จากการพิมพ์)
   const handleBuyMinion = (minionName: string, row: number, col: number) => {
     const minionData = minionTypes.find((m) => m.name === minionName);
     if (minionData && gold >= minionData.cost && minionsLeft > 0) {
       setGold(gold - minionData.cost);
       setMinionsLeft(minionsLeft - 1);
 
-      // เปลี่ยนจากการคำนวณ x,y มาเก็บ row, col และ minionType
+      // เพิ่ม minion ลงใน state พร้อม row, col และ minionType
       setMinionsOnMap([
         ...minionsOnMap,
         { id: generateId(), row, col, minionType: minionName },
@@ -98,40 +95,7 @@ const GameUI: React.FC = () => {
         </div>
       </div>
 
-      {/* Inventory */}
-      <div
-        className="inventory"
-        style={{
-          display: "flex",
-          gap: "10px",
-          justifyContent: "center",
-          margin: "10px 0",
-        }}
-      >
-        {inventory.map((minion, index) => (
-          <div
-            key={index}
-            className="inventory-item"
-            style={{
-              width: 60,
-              height: 60,
-              border: "1px solid #ccc",
-              borderRadius: 4,
-              background: "transparent",
-              padding: 5,
-            }}
-          >
-            <img
-              src={getMinionImage(minion)}
-              alt={minion}
-              width="50"
-              height="50"
-              style={{ objectFit: "contain" }}
-            />
-          </div>
-        ))}
-      </div>
-
+  
       {/* Player Panel */}
       <div className="player-panel bottom-right">
         <div className="player-info">
