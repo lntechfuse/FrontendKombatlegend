@@ -18,42 +18,131 @@ interface MinionPlacement {
   minionType: string;
 }
 
-const GameUI: React.FC = () => {
-  const [gold, setGold] = useState<number>(10000);
-  const [minionsLeft, setMinionsLeft] = useState<number>(10);
-  const [showMinionMenu, setShowMinionMenu] = useState<boolean>(false);
-  const [currentPlayer, setCurrentPlayer] = useState<number>(1);
-  const [inventory, setInventory] = useState<string[]>([]);
-  const [minionsOnMap, setMinionsOnMap] = useState<MinionPlacement[]>([]);
+// ประกาศ interface BoardCell (เหมือนกับใน SVGComponent)
+export interface BoardCell {
+  row: number;
+  col: number;
+  owner: number | null;
+}
 
-  // ตรวจสอบค่า state ของ minionsOnMap ทุกครั้งที่มีการเปลี่ยนแปลง
+const initializeBoard = (): BoardCell[] => {
+  const board: BoardCell[] = [];
+  for (let row = 1; row <= 8; row++) {
+    for (let col = 1; col <= 8; col++) {
+      let owner: number | null = null;
+      // กำหนดพื้นที่เริ่มต้นสำหรับ GM
+      if ((row === 1 && [1, 2, 3].includes(col)) || (row === 2 && [1, 2].includes(col))) {
+        owner = 1;
+      }
+      // กำหนดพื้นที่เริ่มต้นสำหรับ PLAYER
+      if ((row === 7 && [7, 8].includes(col)) || (row === 8 && [6, 7, 8].includes(col))) {
+        owner = 2;
+      }
+      board.push({ row, col, owner });
+    }
+  }
+  return board;
+};
+
+const GameUI: React.FC = () => {
+  // State สำหรับ GM
+  const [gmGold, setGmGold] = useState<number>(10000);
+  const [gmMinionsLeft, setGmMinionsLeft] = useState<number>(10);
+  // เปลี่ยนพื้นที่เริ่มต้นเป็น 5 หน่วยสำหรับแต่ละฝ่าย
+  const [gmHexCount, setGmHexCount] = useState<number>(5);
+  // State สำหรับ PLAYER
+  const [playerGold, setPlayerGold] = useState<number>(10000);
+  const [playerMinionsLeft, setPlayerMinionsLeft] = useState<number>(10);
+  const [playerHexCount, setPlayerHexCount] = useState<number>(5);
+
+  const [showMinionMenu, setShowMinionMenu] = useState<boolean>(false);
+  // currentPlayer 1 = GM, 2 = PLAYER
+  const [currentPlayer, setCurrentPlayer] = useState<number>(1);
+  const [minionsOnMap, setMinionsOnMap] = useState<MinionPlacement[]>([]);
+  const [boardOwnership, setBoardOwnership] = useState<BoardCell[]>(initializeBoard());
+
   useEffect(() => {
     console.log("minionsOnMap:", minionsOnMap);
-    minionsOnMap.forEach((minion, index) => {
-      if (minion.row === 0 || minion.col === 0) {
-        console.warn(`Minion at index ${index} has invalid position:`, minion);
-      }
-    });
-  }, [minionsOnMap]);
+    console.log("boardOwnership:", boardOwnership);
+  }, [minionsOnMap, boardOwnership]);
 
   const generateId = () => Math.floor(Math.random() * 1000000);
 
+  // ฟังก์ชันสำหรับซื้อ minion
   const handleBuyMinion = (minionName: string, row: number, col: number) => {
     const minionData = minionTypes.find((m) => m.name === minionName);
-    if (minionData && gold >= minionData.cost && minionsLeft > 0) {
-      setGold(gold - minionData.cost);
-      setMinionsLeft(minionsLeft - 1);
+    if (!minionData) return;
 
-      // เพิ่ม minion ลงใน state พร้อม row, col และ minionType
-      setMinionsOnMap([
-        ...minionsOnMap,
-        { id: generateId(), row, col, minionType: minionName },
-      ]);
+    // ตรวจสอบว่า cell ใน boardOwnership มี owner ตรงกับ currentPlayerหรือไม่
+    const cell = boardOwnership.find((c) => c.row === row && c.col === col);
+    if (!cell || cell.owner !== currentPlayer) {
+      alert("You can only place a minion in your own area!");
+      setShowMinionMenu(false); // ปิดหน้าต่างเมื่อแจ้งเตือนแล้ว
+      return;
+    }
 
-      setInventory((prev) => [...prev, minionName]);
-      setShowMinionMenu(false);
+    if (currentPlayer === 1) {
+      if (gmGold >= minionData.cost && gmMinionsLeft > 0 && gmHexCount > 0) {
+        setGmGold(gmGold - minionData.cost);
+        setGmMinionsLeft(gmMinionsLeft - 1);
+        setGmHexCount(gmHexCount - 1);
+        setMinionsOnMap([
+          ...minionsOnMap,
+          { id: generateId(), row, col, minionType: minionName },
+        ]);
+        setShowMinionMenu(false);
+      } else {
+        alert("Not enough gold, minions or hexagon area for GM!");
+      }
     } else {
-      alert("Not enough gold or minions left!");
+      if (playerGold >= minionData.cost && playerMinionsLeft > 0 && playerHexCount > 0) {
+        setPlayerGold(playerGold - minionData.cost);
+        setPlayerMinionsLeft(playerMinionsLeft - 1);
+        setPlayerHexCount(playerHexCount - 1);
+        setMinionsOnMap([
+          ...minionsOnMap,
+          { id: generateId(), row, col, minionType: minionName },
+        ]);
+        setShowMinionMenu(false);
+      } else {
+        alert("Not enough gold, minions or hexagon area for PLAYER!");
+      }
+    }
+  };
+
+  // ฟังก์ชันสำหรับซื้อ SpawnableHex (หักเงิน 500 แล้วเพิ่มพื้นที่ขึ้น 1)
+  const handleBuyHexagon = (row: number, col: number): boolean => {
+    const cellIndex = boardOwnership.findIndex((c) => c.row === row && c.col === col);
+    if (cellIndex === -1) return false;
+
+    if (currentPlayer === 1) {
+      if (gmGold >= 500) {
+        setGmGold(gmGold - 500);
+        setGmHexCount(gmHexCount + 1);
+        setBoardOwnership((prev) =>
+          prev.map((c, i) =>
+            i === cellIndex ? { ...c, owner: 1 } : c
+          )
+        );
+        return true;
+      } else {
+        alert("Not enough gold for GM to buy additional area!");
+        return false;
+      }
+    } else {
+      if (playerGold >= 500) {
+        setPlayerGold(playerGold - 500);
+        setPlayerHexCount(playerHexCount + 1);
+        setBoardOwnership((prev) =>
+          prev.map((c, i) =>
+            i === cellIndex ? { ...c, owner: 2 } : c
+          )
+        );
+        return true;
+      } else {
+        alert("Not enough gold for PLAYER to buy additional area!");
+        return false;
+      }
     }
   };
 
@@ -65,19 +154,6 @@ const GameUI: React.FC = () => {
     setCurrentPlayer((prev) => (prev === 1 ? 2 : 1));
   };
 
-  const getMinionImage = (minionType: string): string => {
-    switch (minionType) {
-      case "Mage":
-        return process.env.PUBLIC_URL + "/Minion/Mage.png";
-      case "Warrior":
-        return process.env.PUBLIC_URL + "/Minion/Warrior.png";
-      case "Tank":
-        return process.env.PUBLIC_URL + "/Minion/Tank.png";
-      default:
-        return "";
-    }
-  };
-
   return (
     <div className="game-container">
       {/* GM Panel */}
@@ -87,27 +163,32 @@ const GameUI: React.FC = () => {
           <span className="player-name">GM</span>
         </div>
         <div className="stats">
-          <div className="stat-item">💰 {gold}</div>
-          <div className="stat-item">📦 Minions left: {minionsLeft}</div>
-          <button className="buy-minion" onClick={openMinionMenu}>
-            Buy minion
-          </button>
+          <div className="stat-item">💰 {gmGold}</div>
+          <div className="stat-item">📦 Minions left: {gmMinionsLeft}</div>
+          <div className="stat-item">⬢ SpawnableHex: {gmHexCount}</div>
+          {currentPlayer === 1 && (
+            <button className="buy-minion" onClick={openMinionMenu}>
+              Buy minion
+            </button>
+          )}
         </div>
       </div>
 
-  
-      {/* Player Panel */}
+      {/* PLAYER Panel */}
       <div className="player-panel bottom-right">
         <div className="player-info">
           <span className="player-name">PLAYER</span>
           <img src={avatarplayer} alt="Player Avatar" className="avatar" />
         </div>
         <div className="stats">
-          <div className="stat-item">💰 {gold}</div>
-          <div className="stat-item">📦 Minions left: {minionsLeft}</div>
-          <button className="buy-minion" onClick={openMinionMenu}>
-            Buy minion
-          </button>
+          <div className="stat-item">💰 {playerGold}</div>
+          <div className="stat-item">📦 Minions left: {playerMinionsLeft}</div>
+          <div className="stat-item">⬢ SpawnableHex: {playerHexCount}</div>
+          {currentPlayer === 2 && (
+            <button className="buy-minion" onClick={openMinionMenu}>
+              Buy minion
+            </button>
+          )}
         </div>
       </div>
 
@@ -126,6 +207,10 @@ const GameUI: React.FC = () => {
           width={500}
           height={500}
           minionPlacements={minionsOnMap}
+          gmAreaColor="#C6386D"
+          playerAreaColor="#136A61"
+          onBuyHexagon={handleBuyHexagon}
+          boardOwnership={boardOwnership}
         />
       </div>
 
@@ -134,8 +219,9 @@ const GameUI: React.FC = () => {
       </button>
 
       <p className="current-turn">
-        Current Turn:<br />
-        {currentPlayer === 1 ? "Player 1" : "Player 2"}
+        Current Turn:
+        <br />
+        {currentPlayer === 1 ? "GM" : "PLAYER"}
       </p>
 
       {/* Popup BuyMinionMenu */}
