@@ -8,11 +8,11 @@ import BuyMinionMenu from "./BuyMinionMenu";
 const minionTypes = [
   { name: "Mage", cost: 3500 },
   { name: "Warrior", cost: 2000 },
-  { name: "Tank", cost: 1500 },
+  { name: "Tank", cost: 100 },
 ];
 
 // -------------------------
-// ฟังก์ชันคำนวณพิกัด Hex สำหรับ Flat-Top แบบ odd‑r
+// ฟังก์ชันคำนวณพิกัด Hex สำหรับ Flat-Top แบบ odd‑r (ถ้าต้องใช้ในส่วนอื่น)
 // -------------------------
 const hexSize = 25; // รัศมีของ hex (ครึ่งหนึ่งของความกว้าง)
 const hexWidth = 2 * hexSize; // 50px
@@ -20,25 +20,14 @@ const hexHeight = Math.sqrt(3) * hexSize; // ~43.3px
 const xSpacing = hexWidth * 0.75; // ~37.5px
 const ySpacing = hexHeight;       // ~43.3px
 
-function getHexCenter(row: number, col: number) {
-  // ปรับค่า startX ให้ตรงกับจุดกึ่งกลางของ Hex แรก (row=1, col=1)
-  const startX = 53.4037; // ลองปรับ 53, 55 ตามต้องการ
-  const startY = 85.2458;
-
-  let x = startX + (col - 1) * xSpacing;
-  let y = startY + (row -1.6) * ySpacing;
-
-  return { x, y };
-}
-
 // -------------------------
 // ส่วนโค้ดหลัก GameUI
 // -------------------------
-interface MinionOnMap {
+interface MinionPlacement {
   id: number;
-  type: string;
-  x: number;
-  y: number;
+  row: number;
+  col: number;
+  minionType: string;
 }
 
 const GameUI: React.FC = () => {
@@ -47,7 +36,7 @@ const GameUI: React.FC = () => {
   const [showMinionMenu, setShowMinionMenu] = useState<boolean>(false);
   const [currentPlayer, setCurrentPlayer] = useState<number>(1);
   const [inventory, setInventory] = useState<string[]>([]);
-  const [minionsOnMap, setMinionsOnMap] = useState<MinionOnMap[]>([]);
+  const [minionsOnMap, setMinionsOnMap] = useState<MinionPlacement[]>([]);
 
   const generateId = () => Math.floor(Math.random() * 1000000);
 
@@ -58,13 +47,10 @@ const GameUI: React.FC = () => {
       setGold(gold - minionData.cost);
       setMinionsLeft(minionsLeft - 1);
 
-      // ได้พิกัดกึ่งกลางของ Hex (ไม่ลบ 25)
-      const { x, y } = getHexCenter(row, col);
-
-      // เก็บค่า (x, y) ตรง ๆ
+      // เปลี่ยนจากการคำนวณ x,y มาเก็บ row, col และ minionType
       setMinionsOnMap([
         ...minionsOnMap,
-        { id: generateId(), type: minionName, x, y },
+        { id: generateId(), row, col, minionType: minionName },
       ]);
 
       setInventory((prev) => [...prev, minionName]);
@@ -175,24 +161,8 @@ const GameUI: React.FC = () => {
           currentPlayer={currentPlayer}
           width={500}
           height={500}
-          minionPlacements={[]}
+          minionPlacements={minionsOnMap}
         />
-        {minionsOnMap.map((minion) => (
-          <img
-            key={minion.id}
-            src={getMinionImage(minion.type)}
-            alt={minion.type}
-            style={{
-              position: "absolute",
-              left: minion.x,
-              top: minion.y,
-              width: "50px",
-              height: "50px",
-              // ใช้ translate(-50%, -50%) เพื่อให้กึ่งกลางรูปอยู่ที่ (x,y)
-              transform: "translate(-50%, -50%)",
-            }}
-          />
-        ))}
       </div>
 
       <button className="end-turn" onClick={endTurn}>

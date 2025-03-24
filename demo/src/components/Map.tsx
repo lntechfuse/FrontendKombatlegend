@@ -5,7 +5,6 @@ export interface MapProps {
   currentPlayer: number;
   width: number;
   height: number;
-  // นำ prop onHexagonDrop ออก เพราะเราใช้ระบบพิมพ์ค่าแทน
   minionPlacements?: MinionPlacement[];
 }
 
