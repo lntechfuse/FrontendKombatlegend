@@ -5,13 +5,35 @@ import avatarplayer from "../images/avatarplayer.jpg";
 import Map from "./Map";
 import BuyMinionMenu from "./BuyMinionMenu";
 
-// ข้อมูล Minion ต้นฉบับสำหรับ Popup
 const minionTypes = [
   { name: "Mage", cost: 3500 },
   { name: "Warrior", cost: 2000 },
-  { name: "Tank", cost: 1500 }
+  { name: "Tank", cost: 1500 },
 ];
 
+// -------------------------
+// ฟังก์ชันคำนวณพิกัด Hex สำหรับ Flat-Top แบบ odd‑r
+// -------------------------
+const hexSize = 25; // รัศมีของ hex (ครึ่งหนึ่งของความกว้าง)
+const hexWidth = 2 * hexSize; // 50px
+const hexHeight = Math.sqrt(3) * hexSize; // ~43.3px
+const xSpacing = hexWidth * 0.75; // ~37.5px
+const ySpacing = hexHeight;       // ~43.3px
+
+function getHexCenter(row: number, col: number) {
+  // ปรับค่า startX ให้ตรงกับจุดกึ่งกลางของ Hex แรก (row=1, col=1)
+  const startX = 53.4037; // ลองปรับ 53, 55 ตามต้องการ
+  const startY = 85.2458;
+
+  let x = startX + (col - 1) * xSpacing;
+  let y = startY + (row -1.6) * ySpacing;
+
+  return { x, y };
+}
+
+// -------------------------
+// ส่วนโค้ดหลัก GameUI
+// -------------------------
 interface MinionOnMap {
   id: number;
   type: string;
@@ -24,62 +46,42 @@ const GameUI: React.FC = () => {
   const [minionsLeft, setMinionsLeft] = useState<number>(10);
   const [showMinionMenu, setShowMinionMenu] = useState<boolean>(false);
   const [currentPlayer, setCurrentPlayer] = useState<number>(1);
-
-  // state สำหรับ minion ที่อยู่ใน Inventory (ที่ถูกซื้อแล้วจาก Popup)
   const [inventory, setInventory] = useState<string[]>([]);
-  // state สำหรับ minion ที่ถูกวางบน Map (โดยตำแหน่ง pixel)
   const [minionsOnMap, setMinionsOnMap] = useState<MinionOnMap[]>([]);
 
   const generateId = () => Math.floor(Math.random() * 1000000);
 
-  // เมื่อลากจาก Inventory (ถ้ามี)
-  const handleInventoryDragStart = (
-    e: React.DragEvent<HTMLDivElement>,
-    minionType: string
-  ) => {
-    e.dataTransfer.setData("text/plain", minionType);
-  };
-
-  // เมื่อ drop Minion ลงบน Map Container
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    const minionType = e.dataTransfer.getData("text/plain");
-    const mapRect = e.currentTarget.getBoundingClientRect();
-    const x = e.clientX - mapRect.left;
-    const y = e.clientY - mapRect.top;
-    setMinionsOnMap([...minionsOnMap, { id: generateId(), type: minionType, x, y }]);
-  };
-
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-  };
-
-  // เปิด Popup สำหรับซื้อ Minion
-  const openMinionMenu = () => {
-    setShowMinionMenu(true);
-  };
-
-  // เมื่อซื้อ Minion (จาก BuyMinionMenu) ให้จัดการ: หักเงิน, ลดจำนวน, เพิ่มเข้า Inventory
-  const handleBuyMinion = (minionName: string) => {
+  // ฟังก์ชันสำหรับซื้อ minion โดยรับค่า row, col (จากการพิมพ์)
+  const handleBuyMinion = (minionName: string, row: number, col: number) => {
     const minionData = minionTypes.find((m) => m.name === minionName);
     if (minionData && gold >= minionData.cost && minionsLeft > 0) {
       setGold(gold - minionData.cost);
       setMinionsLeft(minionsLeft - 1);
-      // เพิ่ม minion เข้าสู่ Inventory
+
+      // ได้พิกัดกึ่งกลางของ Hex (ไม่ลบ 25)
+      const { x, y } = getHexCenter(row, col);
+
+      // เก็บค่า (x, y) ตรง ๆ
+      setMinionsOnMap([
+        ...minionsOnMap,
+        { id: generateId(), type: minionName, x, y },
+      ]);
+
       setInventory((prev) => [...prev, minionName]);
-      // ปิด Popup
       setShowMinionMenu(false);
     } else {
       alert("Not enough gold or minions left!");
     }
   };
 
-  // สลับ Turn
+  const openMinionMenu = () => {
+    setShowMinionMenu(true);
+  };
+
   const endTurn = () => {
     setCurrentPlayer((prev) => (prev === 1 ? 2 : 1));
   };
 
-  // กำหนด URL รูปภาพ Minion จาก public folder
   const getMinionImage = (minionType: string): string => {
     switch (minionType) {
       case "Mage":
@@ -110,29 +112,27 @@ const GameUI: React.FC = () => {
         </div>
       </div>
 
-      {/* Inventory: แสดง Minion (draggable) */}
+      {/* Inventory */}
       <div
         className="inventory"
         style={{
           display: "flex",
           gap: "10px",
           justifyContent: "center",
-          margin: "10px 0"
+          margin: "10px 0",
         }}
       >
         {inventory.map((minion, index) => (
           <div
             key={index}
             className="inventory-item"
-            draggable
-            onDragStart={(e) => handleInventoryDragStart(e, minion)}
             style={{
               width: 60,
               height: 60,
               border: "1px solid #ccc",
               borderRadius: 4,
               background: "transparent",
-              padding: 5
+              padding: 5,
             }}
           >
             <img
@@ -143,36 +143,6 @@ const GameUI: React.FC = () => {
               style={{ objectFit: "contain" }}
             />
           </div>
-        ))}
-      </div>
-
-      {/* Map Container: รองรับ Drag & Drop */}
-      <div
-        className="map-container"
-        onDrop={handleDrop}
-        onDragOver={handleDragOver}
-        style={{
-          position: "relative",
-          width: "500px",
-          height: "500px",
-          margin: "0 auto"
-        }}
-      >
-        <Map currentPlayer={currentPlayer} width={500} height={500} />
-        {minionsOnMap.map((minion) => (
-          <img
-            key={minion.id}
-            src={getMinionImage(minion.type)}
-            alt={minion.type}
-            style={{
-              position: "absolute",
-              left: minion.x,
-              top: minion.y,
-              width: "50px",
-              height: "50px",
-              transform: "translate(-50%, -50%)"
-            }}
-          />
         ))}
       </div>
 
@@ -191,6 +161,40 @@ const GameUI: React.FC = () => {
         </div>
       </div>
 
+      {/* Map Container */}
+      <div
+        className="map-container"
+        style={{
+          position: "relative",
+          width: "500px",
+          height: "500px",
+          margin: "0 auto",
+        }}
+      >
+        <Map
+          currentPlayer={currentPlayer}
+          width={500}
+          height={500}
+          minionPlacements={[]}
+        />
+        {minionsOnMap.map((minion) => (
+          <img
+            key={minion.id}
+            src={getMinionImage(minion.type)}
+            alt={minion.type}
+            style={{
+              position: "absolute",
+              left: minion.x,
+              top: minion.y,
+              width: "50px",
+              height: "50px",
+              // ใช้ translate(-50%, -50%) เพื่อให้กึ่งกลางรูปอยู่ที่ (x,y)
+              transform: "translate(-50%, -50%)",
+            }}
+          />
+        ))}
+      </div>
+
       <button className="end-turn" onClick={endTurn}>
         END TURN
       </button>
@@ -200,7 +204,7 @@ const GameUI: React.FC = () => {
         {currentPlayer === 1 ? "Player 1" : "Player 2"}
       </p>
 
-      {/* Popup BuyMinionMenu: เมื่อเปิด Popup ผู้ใช้ลาก Minion จากนี้ลง Map */}
+      {/* Popup BuyMinionMenu */}
       {showMinionMenu && (
         <BuyMinionMenu
           minionTypes={minionTypes}

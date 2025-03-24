@@ -6,11 +6,8 @@ interface HexagonProps extends React.SVGProps<SVGPathElement> {
   row?: number;
   col?: number;
   currentPlayer: number;
-  onDropHexagon?: (
-    row: number,
-    col: number,
-    event: React.DragEvent<SVGElement>
-  ) => void;
+  // ไม่จำเป็นต้องมี onDropHexagon สำหรับระบบพิมพ์ค่า
+  // onDropHexagon?: (row: number, col: number, event: React.DragEvent<SVGElement>) => void;
 }
 
 const Hexagon: React.FC<HexagonProps> = ({
@@ -19,7 +16,6 @@ const Hexagon: React.FC<HexagonProps> = ({
   row,
   col,
   currentPlayer,
-  onDropHexagon,
   ...props
 }) => {
   // กำหนด fixedOwner ตามตำแหน่งที่เป็นพื้นที่ของผู้เล่น
@@ -53,26 +49,6 @@ const Hexagon: React.FC<HexagonProps> = ({
     }
   };
 
-  // อนุญาตให้ drop เกิดขึ้นบนพื้นที่ hexagon
-  const handleDragOver = (e: React.DragEvent<SVGPathElement>) => {
-    e.preventDefault();
-  };
-
-  // เมื่อมีการ drop (minion) ลงบน hexagon
-  const handleDrop = (e: React.DragEvent<SVGPathElement>) => {
-    e.preventDefault();
-    if (onDropHexagon && row !== undefined && col !== undefined) {
-      // ส่งข้อมูลกลับไปให้ parent ผ่าน callback
-      onDropHexagon(row, col, e);
-    } else {
-      const droppedData = e.dataTransfer.getData("text/plain");
-      // ถ้ามีข้อมูล minion ที่ถูก drop และพื้นที่นี้ยังว่าง
-      if (droppedData && owner === null) {
-        setOwner(currentPlayer);
-      }
-    }
-  };
-
   // กำหนดสีขอบ:
   // - ถ้า owner ถูกกำหนดแล้ว (fixed หรือซื้อไปแล้ว) ใช้สีของผู้เล่นนั้น
   // - ถ้ายังไม่ได้ซื้อ (owner === null) ใช้สี neutral (#6A6A6A)
@@ -86,8 +62,7 @@ const Hexagon: React.FC<HexagonProps> = ({
       stroke={strokeColor}
       strokeWidth={5}
       onClick={handleClick}
-      onDragOver={handleDragOver}
-      onDrop={handleDrop}
+      // ลบการใช้งาน Drag & Drop เนื่องจากระบบพิมพ์ค่าไม่ต้องการ
       style={{ cursor: owner === null ? "pointer" : "default" }}
       data-row={row}
       data-col={col}
